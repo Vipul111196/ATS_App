@@ -37,3 +37,17 @@ description:{jd}
 I want the response in one single string having the structure
 {{"JD Match":"%","MissingKeywords:[]","Profile Summary":""}}
 """
+
+## streamlit app
+st.title("Smart ATS")
+st.text("Improve Your Resume ATS")
+jd=st.text_area("Paste the Job Description")
+uploaded_file=st.file_uploader("Upload Your Resume",type="pdf",help="Please uplaod the pdf")
+
+submit = st.button("Submit")
+
+if submit:
+    if uploaded_file is not None:
+        text=input_pdf_text(uploaded_file)
+        response=get_gpt4o_repsonse(input_prompt)
+        st.subheader(response)

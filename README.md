@@ -24,7 +24,7 @@ Smart ATS is a Streamlit-based tool that uses OpenAI's GPT-4 API to evaluate res
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/Vipul111196/ATS_App.git
-   cd smart-ats
+   cd ATS_App
    ```
 
 2. **Install dependencies**:

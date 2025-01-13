@@ -123,11 +123,10 @@ uploaded_file = st.file_uploader("Upload Your Resume (PDF format)", type="pdf", 
 submit = st.button("Submit")
 
 # Process submission
+# Process submission
 if submit:
-    # if not (openai_api_key or huggingface_token):
-    #     st.error("Please enter your OpenAI API key in the sidebar.")
     if not huggingface_token:
-        st.error("Please enter your huggingface_token in the sidebar.")
+        st.error("Please enter your Hugging Face token in the sidebar.")
     elif not jd:
         st.warning("Please enter the job description.")
     elif uploaded_file is None:
@@ -138,9 +137,29 @@ if submit:
             if resume_text:
                 input_data = {"job_description": jd, "resume_text": resume_text, "domain": domain}
                 response = get_llm_response(input_data)
-                st.subheader("Recommendations for ATS friendly resume")
-                st.write("Most Important: Use basic template as shown here 'https://www.jobscan.co/resume-templates/ats-templates' and focus on below suggestions: ")
-                st.write(response)
+
+                # Parse JSON response for better formatting
+                try:
+                    parsed_response = eval(response)  # Safely parse the response if it is a dictionary
+                    st.subheader("Recommendations for ATS Friendly Resume")
+                    st.markdown("""
+                    **Most Important**: Use a basic template as shown [here](https://www.jobscan.co/resume-templates/ats-templates) 
+                    and focus on the following suggestions:
+                    """)
+                    
+                    # Display each section clearly
+                    st.write(f"**JD Match Percentage:** {parsed_response.get('JD Match Percentage', 'N/A')}")
+                    st.write(f"**Missing Keywords:** {', '.join(parsed_response.get('Missing Keywords', []))}")
+                    st.markdown("### Profile Enhancement Suggestions")
+                    st.write(parsed_response.get("Profile Enhancement Suggestions", "No suggestions provided."))
+                    st.markdown("### Match Assessment")
+                    st.write(parsed_response.get("Match Assessment", "No assessment provided."))
+                    st.markdown("### Improvement Suggestions")
+                    st.write(parsed_response.get("Improvement Suggestions", "No improvement suggestions provided."))
+
+                except Exception as e:
+                    st.error(f"Failed to format the response. Raw output: {response}")
+
             else:
                 st.error("Failed to extract text from the uploaded PDF. Please check the file and try again.")
 

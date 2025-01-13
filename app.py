@@ -66,54 +66,28 @@ llm = HuggingFaceEndpoint(endpoint_url=endpoint_url)
 ###########################################################
 
 # Chat prompt template
-# template = """
-# You are an advanced and highly skilled Applicant Tracking System (ATS) with expertise in evaluating resumes across various industries. Your task is to review the provided resume in relation to the given job description and provide constructive feedback.
-
-# **Instructions**:
-# 1. Start with a brief, natural-language review of the resume's overall quality and effectiveness, focusing on its strengths and weaknesses.
-# 2. Provide a structured match assessment, including:
-#    {{
-#       "JD Match Percentage": "<calculated_percentage>%",
-#       "Missing Keywords": ["keyword1", "keyword2", ...],
-#       "Profile Enhancement Suggestions": "Your detailed suggestions here."
-#    }}
-# 3. Conclude with actionable suggestions, including recommended skills to develop, courses to take, or projects to undertake to strengthen the candidate's profile.
-
-# **Inputs**:
-# Resume: {resume_text}
-# Job Description: {job_description}
-
-# **Response Format**:
-# 1. **Resume Review**: Provide a brief natural-language assessment of the resume.
-# 2. **Match Assessment**: Provide a structured analysis of the match with the job description.
-# 3. **Improvement Suggestions**: Recommend specific courses, certifications, or projects to strengthen the resume and improve job suitability.
-
-# Be constructive, supportive, and detailed in your response.
-# """
-
 template = """
-As an advanced Applicant Tracking System (ATS) with comprehensive knowledge across various industries, your task is to strictly output a JSON object that evaluates the provided resume against the job description. 
-
-**Instructions**:
-1. Calculate a percentage match between the resume and job description.
-2. Identify missing critical keywords.
-3. Provide enhancement suggestions.
+You are an advanced and highly skilled Applicant Tracking System (ATS) with expertise in evaluating resumes across various industries. Your task is to review the provided resume in relation to the given job description and provide constructive feedback.
 
 **Inputs**:
 Resume: {resume_text}
 Job Description: {job_description}
+Domain: {domain}
 
-Respond in the following JSON format.
+**Instructions**:
+1. Start with a brief, natural-language review of the resume's overall quality and effectiveness, focusing on its strengths and weaknesses.
+2. Provide a structured match assessment, including:
+    A. "JD Match Percentage": "<calculated_percentage>%",
+    B. "Missing Keywords": ["keyword1", "keyword2", ...],
+3. Conclude with actionable suggestions, including recommended skills to develop, courses to take, or projects to undertake to strengthen the candidate's profile.
 
-{{
-  "**JD Match Percentage**": "<calculated_percentage>%",
-  "**Missing Keywords**": ["keyword1", "keyword2", ...],
-  "**Profile Enhancement Suggestions**": "Your detailed suggestions here."
-  "**Match Assessment**": "Provide a structured analysis of the match with the job description."
-  "**Improvement Suggestions**": "Recommend specific courses, certifications, or projects to strengthen the resume and improve job suitability."
-}}
+**Response Format**: Make sure all the sections headings are bold:
+1. **Match Assessment**: Provide a structured analysis of the match with the job description. Start with the calculated match percentage and list any missing keywords from next line.
+2. **Resume Review**: Provide a brief natural-language assessment of the resume.
+3. **Improvement Suggestions**: Recommend specific courses, certifications, or projects to strengthen the resume and improve job suitability.
+
+Be constructive, supportive, and detailed in your response.
 """
-
 
 prompt = ChatPromptTemplate.from_template(template=template)
 
@@ -143,6 +117,7 @@ st.title("Application Tracking System ATS :briefcase:")
 st.markdown("**Enhance Your Resume for Applicant Tracking Systems**")
 
 # Inputs
+domain = st.text_input("Enter the domain of the job", help="Enter the domain of the job you are applying for...")
 jd = st.text_area("Paste the Job Description", height=200, placeholder="Enter the job description here...")
 uploaded_file = st.file_uploader("Upload Your Resume (PDF format)", type="pdf", help="Please upload your resume in PDF format.")
 submit = st.button("Submit")
@@ -161,7 +136,7 @@ if submit:
         with st.spinner("Processing..."):
             resume_text = input_pdf_text(uploaded_file)
             if resume_text:
-                input_data = {"job_description": jd, "resume_text": resume_text}
+                input_data = {"job_description": jd, "resume_text": resume_text, "domain": domain}
                 response = get_llm_response(input_data)
                 st.subheader("Recommendations for ATS friendly resume")
                 st.write("Most Important: Use basic template as shown here 'https://www.jobscan.co/resume-templates/ats-templates' and focus on below suggestions: ")

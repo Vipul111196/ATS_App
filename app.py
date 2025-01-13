@@ -103,15 +103,13 @@ As an advanced Applicant Tracking System (ATS) with comprehensive knowledge acro
 Resume: {resume_text}
 Job Description: {job_description}
 
-Respond in the following JSON format.
+Respond in the following format.
 
-{{
   "**JD Match Percentage**": "<calculated_percentage>%",
   "**Missing Keywords**": ["keyword1", "keyword2", ...],
   "**Profile Enhancement Suggestions**": "Your detailed suggestions here."
   "**Match Assessment**": "Provide a structured analysis of the match with the job description."
   "**Improvement Suggestions**": "Recommend specific courses, certifications, or projects to strengthen the resume and improve job suitability."
-}}
 """
 
 

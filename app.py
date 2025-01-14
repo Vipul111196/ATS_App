@@ -72,7 +72,6 @@ You are an advanced and highly skilled Applicant Tracking System (ATS) with expe
 **Inputs**:
 Resume: {resume_text}
 Job Description: {job_description}
-Domain: {domain}
 
 **Instructions**:
 1. Start with a brief, natural-language review of the resume's overall quality and effectiveness, focusing on its strengths and weaknesses.
@@ -81,7 +80,8 @@ Domain: {domain}
     B. "Missing Keywords": ["keyword1", "keyword2", ...],
 3. Conclude with actionable suggestions, including recommended skills to develop, courses to take, or projects to undertake to strengthen the candidate's profile.
 
-**Response Format**: Make sure all the sections headings are bold:
+**Response Format**: 
+- Make sure all the sections headings are bold:
 1. **Match Assessment**: Provide a structured analysis of the match with the job description. Start with the calculated match percentage and list any missing keywords from next line.
 2. **Resume Review**: Provide a brief natural-language assessment of the resume.
 3. **Improvement Suggestions**: Recommend specific courses, certifications, or projects to strengthen the resume and improve job suitability.
@@ -117,49 +117,38 @@ st.title("Application Tracking System ATS :briefcase:")
 st.markdown("**Enhance Your Resume for Applicant Tracking Systems**")
 
 # Inputs
-domain = st.text_input("Enter the domain of the job", help="Enter the domain of the job you are applying for...")
+# domain = st.text_input("Enter the domain of the job", help="Enter the domain of the job you are applying for...")
 jd = st.text_area("Paste the Job Description", height=200, placeholder="Enter the job description here...")
 uploaded_file = st.file_uploader("Upload Your Resume (PDF format)", type="pdf", help="Please upload your resume in PDF format.")
 submit = st.button("Submit")
 
 # Process submission
-# Process submission
 if submit:
+   
     if not huggingface_token:
         st.error("Please enter your Hugging Face token in the sidebar.")
     elif not jd:
         st.warning("Please enter the job description.")
     elif uploaded_file is None:
         st.warning("Please upload your resume in PDF format.")
+    
     else:
         with st.spinner("Processing..."):
             resume_text = input_pdf_text(uploaded_file)
+            
             if resume_text:
-                input_data = {"job_description": jd, "resume_text": resume_text, "domain": domain}
+                input_data = {"job_description": jd, "resume_text": resume_text}
                 response = get_llm_response(input_data)
 
-                # Parse JSON response for better formatting
-                try:
-                    parsed_response = eval(response)  # Safely parse the response if it is a dictionary
-                    st.subheader("Recommendations for ATS Friendly Resume")
-                    st.markdown("""
-                    **Most Important**: Use a basic template as shown [here](https://www.jobscan.co/resume-templates/ats-templates) 
-                    and focus on the following suggestions:
-                    """)
-                    
-                    # Display each section clearly
-                    st.write(f"**JD Match Percentage:** {parsed_response.get('JD Match Percentage', 'N/A')}")
-                    st.write(f"**Missing Keywords:** {', '.join(parsed_response.get('Missing Keywords', []))}")
-                    st.markdown("### Profile Enhancement Suggestions")
-                    st.write(parsed_response.get("Profile Enhancement Suggestions", "No suggestions provided."))
-                    st.markdown("### Match Assessment")
-                    st.write(parsed_response.get("Match Assessment", "No assessment provided."))
-                    st.markdown("### Improvement Suggestions")
-                    st.write(parsed_response.get("Improvement Suggestions", "No improvement suggestions provided."))
-
-                except Exception as e:
-                    st.error(f"Failed to format the response. Raw output: {response}")
-
+                # Display response
+                st.subheader("Recommendations for ATS Friendly Resume")
+                st.markdown("""
+                **Most Important**: Use a basic template as shown [here](https://www.jobscan.co/resume-templates/ats-templates) 
+                and focus on the following suggestions:
+                """)
+                st.markdown(f"""{response}""")
+                st.write(response)
+                # st.write("0022336655")
             else:
                 st.error("Failed to extract text from the uploaded PDF. Please check the file and try again.")
 

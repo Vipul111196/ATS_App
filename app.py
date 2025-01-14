@@ -147,7 +147,7 @@ if submit:
                 and focus on the following suggestions:
                 """)
                 st.markdown(f"""{response}""")
-                st.write(response)
+                # st.write(response)
                 # st.write("0022336655")
             else:
                 st.error("Failed to extract text from the uploaded PDF. Please check the file and try again.")
